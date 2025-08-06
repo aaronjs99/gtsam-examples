@@ -31,13 +31,13 @@ int main() {
     initialEstimate.insert(2, Pose2(2.3, 0.1, -0.2));
     initialEstimate.insert(3, Pose2(4.1, 0.1, 0.1));
 
-    cout << "\n📍 Initial estimates:\n";
+    cout << "\n Initial estimates:\n";
     initialEstimate.print("  ");
 
     // Calculate and print initial error
     double initialError = graph.error(initialEstimate);
     cout << std::fixed << std::setprecision(3);
-    cout << "\n❌ Initial total error: " << initialError << "\n";
+    cout << "\n Initial total error: " << initialError << "\n";
 
     // Optimize using Levenberg-Marquardt
     LevenbergMarquardtParams params;
@@ -46,11 +46,11 @@ int main() {
     Values result = optimizer.optimize();
 
     // Final output
-    cout << "\n✅ Optimized poses:\n";
+    cout << "\n Optimized poses:\n";
     result.print("  ");
 
     double finalError = graph.error(result);
-    cout << "\n🎯 Final total error: " << finalError << "\n";
+    cout << "\n Final total error: " << finalError << "\n";
 
     // Query the marginals
     cout << std::fixed << std::setprecision(3);

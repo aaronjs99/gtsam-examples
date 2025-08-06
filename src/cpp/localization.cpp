@@ -34,9 +34,9 @@ int main() {
         noiseModel::Diagonal::Sigmas(Vector3(0.2, 0.2, 0.1))));
 
     // Add loop closure factor
-    graph.add(BetweenFactor<Pose2>(6, 1,
-        Pose2(0.0, 0.0, M_PI/2),
-        noiseModel::Diagonal::Sigmas(Vector3(0.1, 0.1, 0.05))));
+    graph.add(BetweenFactor<Pose2>(6, 2,
+        Pose2(0.0, 0.0, 0.0),
+        noiseModel::Diagonal::Sigmas(Vector3(0.2, 0.2, 0.1))));
 
     // Initial estimate
     Values initialEstimate;
@@ -47,16 +47,33 @@ int main() {
     initialEstimate.insert(5, Pose2(2.1, 2.0, -M_PI/2 + 0.1));
     initialEstimate.insert(6, Pose2(2.0, -0.1, 0.0));
 
+    // Print initial estimates
+    initialEstimate.print("\nInitial Pose Estimates:");
+
+    // Calculate and print initial error
+    double initialError = graph.error(initialEstimate);
+    cout << std::fixed << std::setprecision(3);
+    cout << "Initial total error: " << initialError << "\n\n";
+
     // Optimize using Levenberg-Marquardt
     LevenbergMarquardtParams params;
-    params.setVerbosity("ERROR");
+    params.setVerbosity("TERMINATION");
     LevenbergMarquardtOptimizer optimizer(graph, initialEstimate, params);
     Values result = optimizer.optimize();
 
     // Print results
-    cout << "Final Result:\n";
-    result.print("Final Poses:\n");
+    result.print("\nFinal Poses:");
+
+    double finalError = graph.error(result);
+    cout << std::fixed << std::setprecision(3);
+    cout << "\nFinal total error: " << finalError << "\n";
+
+    // Query the marginals
+    Marginals marginals(graph, result);
+    for (size_t i = 1; i <= 6; ++i) {
+        cout << "\nCovariance of pose " << i << ":\n" << marginals.marginalCovariance(i);
+    }
     
-    cout << "\n========== Localization Complete ==========\n";
+    cout << "\n\n========== Localization Complete ==========\n";
     return 0;
 }
